@@ -1,24 +1,36 @@
 #include<list>
+#include <stdlib.h> 
+#include <time.h>
 using namespace std;
 /**
- * ÊôĞÔÊıÄ¿
+ * å±æ€§æ•°ç›®
  */
 #define ATT_NUM		7
 
 /**
- * ÊôĞÔÓò·¶Î§
+ * å±æ€§åŸŸèŒƒå›´
  */
 #define ATT_DOMAIN	5
 
 /**
- * ¿Í»§ÊıÁ¿
+ * èŠ‚ç‚¹æ•°ç›® 
+ */
+#define NODE_NUM 92
+
+/**
+ * å®¢æˆ·æ•°é‡
  */
 #define USER_NUM	1000
 
  /**
- * ÂìÒÏÊıÁ¿
+ * èš‚èšæ•°é‡
  */
 #define ANT_NUM
+
+/**
+ * è¿è¡Œæ—¶åˆ» 
+ */
+#define TOTAL 10
 
 
 enum ATT_NAME {
@@ -28,35 +40,44 @@ enum ATT_NAME {
 	edu,
 	house,
 	job,
-	pay,
-	relationship				// ÓëÒøĞĞ¹ØÏµ
+	pay
 };
 
-// µÚp¸öÊôĞÔÓòµÄĞÅÓÃÈ¨ÖØÎª mµÄ½Úµã
-struct Node{
-	int att_num;
-	int weight;
-}Att[ATT_NUM][32];
+// ç¬¬pä¸ªå±æ€§åŸŸçš„ä¿¡ç”¨æƒé‡ä¸º mçš„èŠ‚ç‚¹
+int Att[NODE_NUM][2]={
+              {0,1},{0,2},{0,3},{0,4},{0,5},{0,6},{0,7},{0,8},
+              {1,1},{1,2},{1,3},{1,4},
+              {2,1},{2,2},{2,3},{2,4},{2,5},{2,6},{2,7},{2,8},
+              {3,1},{3,2},{3,3},{3,4},{3,5},{3,6},{3,7},{3,8},{3,9},{3,10},{3,11},{3,12},{3,13},{3,14},{3,15},{3,16},
+              {3,17},{3,18},{3,19},{3,20},{3,21},{3,22},{3,23},{3,24},{3,25},{3,26},{3,27},{3,28},{3,29},{3,30},{3,31},{3,32},
+              {4,1},{4,2},{4,3},{4,4},{4,5},{4,6},{4,7},{4,8},{4,9},{4,10},{4,11},{4,12},{4,13},{4,14},{4,15},{4,16},
+              {5,1},{5,2},{5,3},{5,4},{5,5},{5,6},{5,7},{5,8},{5,9},{5,10},{5,11},{5,12},{5,13},{5,14},{5,15},{5,16},
+              {6,1},{6,2},{6,3},{6,4},{6,5},{6,6},{6,7},{6,8},
+                  };
+//èŠ‚ç‚¹é—´ä¿¡æ¯ç´ å¼ºåº¦ å’Œ ä¸‹ä¸€èŠ‚ç‚¹æœŸæœ› 
+dobule tau[NODE_NUM][NODE_NUM],eta[NODE_NUM][NODE_NUM];
 
-int r[ATT_NUM] = {8,4,8,32,16,16,8};					// ÊôĞÔ¶ÔÓ¦µÄÊôĞÔ·¶Î§×î´óÖµ
-list<Node> allowed;
-list<Node> passed;
+int r[ATT_NUM] = {8,4,8,32,16,16,8};					// å±æ€§å¯¹åº”çš„å±æ€§èŒƒå›´æœ€å¤§å€¼
+list<int[2]> allowed;
+list<int[2]> passed;
 
-int user[USER_NUM][ATT_NUM];	// Ò»Ç§¸ö¿Í»§
+int user[USER_NUM][ATT_NUM];	// ä¸€åƒä¸ªå®¢æˆ·
 int user_credit[USER_NUM];
 
 double alpha, beta;
 
 int C[1000];	//
-int O[1000];	//ÊÇ·ñÇ·Ç®
+int O[1000];	//æ˜¯å¦æ¬ é’±
 int fit[1000];
 
 
 
 int init_credit(int i) {
+    srand((unsigned)time(NULL));
+    int random_v = rand();
 	int sum = 0;
 	for (int j = 0; j < ATT_NUM; j++)
-		sum += ??;
+		sum += random_v%r[i];
 	return sum;
 }
 
@@ -103,16 +124,36 @@ void AverageInitialCredit() {
 void CreateNodeDiagram() {
 
 }
-
-
-void selectNextNode() {
+void initial_ant(dboule tao, dobule) {
 
 }
 
-void init_ant() {
+double FeelPheromone(int i, int j, int t) {
+     if (i!=j){
+        return (pow(tau[i][j],alpha) * pow(eta[i][j], beta));          
+     }
+     return 0;
+}
+void UpdatePheromone(){
 
 }
 
-void run() {
 
+void maxsolution(){
+     
+}
+
+int main(){
+    for(int i=0;i<TOTAL;i++){
+		while(){
+			FeelPheromone();
+		}
+		for(int j=0;j<ANT_NUM;j++){
+			fitness();
+		}
+		UpdatePheromone();
+		SaveRoundMaxSolution();
+	}        
+	maxsolution(); 
+    return 0;
 }

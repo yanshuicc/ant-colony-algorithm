@@ -3,3 +3,7 @@
 *.sln
 *.sdf
 *.vcxproj
+*.layout
+*.win
+*.o
+*.dev
