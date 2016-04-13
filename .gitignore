@@ -23,3 +23,6 @@ llcx/源.cpp
 llcx/pay.txt
 llcx/sex.txt
 llcx/test.cpp
+*.idb
+*.obj
+*.enc

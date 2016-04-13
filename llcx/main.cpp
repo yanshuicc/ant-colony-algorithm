@@ -11,7 +11,7 @@ using namespace std;
 #define ATT_NUM		7
 
 // 节点数目 
-#define NODE_NUM	92
+#define NODE_NUM	86
 
 //客户数量
 #define USER_NUM	1000
@@ -85,7 +85,7 @@ double AverageInitialCredit_v;
 int Tour[TOTAL][2];
 
 struct Ant {
-	int start, current;
+	int current;
 	int allowed[ATT_NUM];
 	int Tour[ATT_NUM][2];//当前路径
 	int Node_Tour[ATT_NUM];
@@ -189,18 +189,23 @@ void Initial_ant() {
 		srand(seed);
 		int random_v = rand();
 		seed = random_v * i;
-		ant[i].start = ant[i].current = random_v % NODE_NUM;
-		for (int j = 0; j < NODE_NUM; j++)
+		int Node_start = random_v % NODE_NUM;
+		int start = Att[Node_start][0];
+		for (int j = 0; j < ATT_NUM; j++)
 		{
-			if (ant[i].start != j && Att[j][0]!=Att[ant[i].start][0])
+			if (start != j)
 				ant[i].allowed[j] = 1;
 			else
 				ant[i].allowed[j] = 0;
 		}
-		for (int j = 0; j < ATT_NUM; j++) {
+		ant[i].Node_Tour[0] = Node_start;
+		ant[i].Tour[0][0] = Att[Node_start][0];
+		ant[i].Tour[0][1] = Att[Node_start][1];
+		for (int j = 1; j < ATT_NUM; j++) {
 			ant[i].Node_Tour[j] = -1;
 			ant[i].Tour[j][0] = ant[i].Tour[j][1] = -1;
 		}
+		ant[i].current = 0;
 	}
 }
 
@@ -209,9 +214,10 @@ int FeelPheromone(int ant_num) {
 	//Pheromone分母
 	double sum= 0.0;
 	int current = ant[ant_num].current;
-	for (int i = 0; i < NODE_NUM; i++)
-		if (ant[ant_num].allowed[i]) {
-			sum += pow(tau[current][i], alpha) * pow(eta[current][i], beta);
+	int current_node = ant[ant_num].Node_Tour[current];
+	for (int next = 0; next < NODE_NUM; next++)
+		if (ant[ant_num].allowed[next]==1) {
+			sum += pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
 		}
 
 	srand((unsigned)GetTickCount());
@@ -219,8 +225,8 @@ int FeelPheromone(int ant_num) {
 	double probability = 0.0;
 
 	for (int next = 0; next < NODE_NUM; next++) {
-		if (current != next && ant[ant_num].allowed[next]==1) {
-			double a = pow(tau[current][next], alpha) * pow(eta[current][next], beta);
+		if (ant[ant_num].allowed[next]==1) {
+			double a = pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
 			probability +=  a / sum;
 			if(probability >= p || (p > 0.9999 && probability > 0.9999))
 			{
@@ -283,10 +289,15 @@ int main() {
 	double fit[TOTAL];
 	for (int i = 0; i<TOTAL; i++) {
 		Initial_ant();
-		for (int j = 0; j < NODE_NUM; j++) {
+		for (int j = 0; j < ATT_NUM; j++) {
 			for (int k = 0; k < ANT_NUM; k++) {
 				int pass = FeelPheromone(k);
+				if (pass == -1) {
+					cout << "error" << endl;
+					return 0;
+				}
 				ant[k].allowed[pass] = 0;
+				ant[k].current++;
 			}
 		}
 	}
