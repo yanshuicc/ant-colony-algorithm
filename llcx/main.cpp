@@ -149,7 +149,7 @@ void InitialParameters() {
 	
 	int seed = GetTickCount();
 	for (int i = 0; i<TOTAL; i++) {
-		for (int j = 0; j < ATT_NUM; j++) {
+		for (int j = 0; j < LEVEL_NUM; j++) {
 			for (int k = 0; k < ANT_NUM; k++) {
     			srand(seed);
     			seed=rand();
@@ -287,7 +287,7 @@ void UpdatePheromone(){
 	{
 		for (int j = 0; j < NODE_NUM; j++)
 		{
-			tau[i][j] *= (1 - rou);
+			tau[i][j] *=  rou;
 		}
 	}
 	for (int i = 0; i < ANT_NUM; i++) {
@@ -314,7 +314,7 @@ int main() {
 	double fit[TOTAL];
 	for (int i = 0; i<TOTAL; i++) {
 		Initial_ant();
-		for (int j = 0; j < LEVEL_NUM; j++) {
+		for (int j = 0; j < LEVEL_NUM-1; j++) {
 			for (int k = 0; k < ANT_NUM; k++) {
 				int pass = FeelPheromone(k,rand_int[i*j*ANT_NUM+j*ANT_NUM+k]);
 				if (pass == -1) {
