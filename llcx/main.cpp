@@ -7,11 +7,15 @@
 using namespace std;
 //输出测试保存数据
 #define OUT_DATA
+
 //属性数目
 #define ATT_NUM		7
 
-// 节点数目 
+// 节点总数目  (8+4+8+32+16+16+2)
 #define NODE_NUM	86
+
+// 路径总数 (4+2+2+3+3+4+2)
+#define LEVEL_NUM	20
 
 //客户数量
 #define USER_NUM	1000
@@ -37,7 +41,7 @@ using namespace std;
 //eta
 #define ETA			1.0
 
-
+//用户属性分布概率
 int user_p[ATT_NUM][5] = {
 						{35,80,95,100,-1},
 						{69,100,-1},
@@ -47,8 +51,11 @@ int user_p[ATT_NUM][5] = {
 						{24,49,79,100,-1},
 						{21,100,-1} };
 
+//属性分级
+int user_level[ATT_NUM] = { 4,2,2,3,3,4,2 };
+
 double AverageInitialCredit();
-double init_credit(int i);
+double init_credit(int i, int m);
 double fitness();
 void InitialParameters();
 
@@ -87,18 +94,14 @@ int Tour[TOTAL][2];
 struct Ant {
 	int current;
 	int allowed[ATT_NUM];
-	int Tour[ATT_NUM][2];//当前路径
-	int Node_Tour[ATT_NUM];
+	int Tour[LEVEL_NUM][2];//当前路径
+	int Node_Tour[LEVEL_NUM];
 }ant[ANT_NUM];
 
-double init_credit(int i) {
-	int seed = GetTickCount();
+double init_credit(int i,int m) {
 	int sum = 0;
 	for (int j = 0; j < ATT_NUM; j++) {
-		srand(seed);
-		int random_v = rand();
-		seed = j * random_v;
-		sum += random_v%r[i];
+//		sum += ant[m].Tour[user[i][j]][1];
 	}
 	return (double)sum;
 }
@@ -108,10 +111,11 @@ double fitness() {
 	double fit[ANT_NUM];
 	for (int m = 1; m < ANT_NUM; m++) {
 		for (int i = 1; i < USER_NUM; i++) {
-			if (init_credit(i) < AverageInitialCredit_v &&
+			double init_credit_v = init_credit(i, m);
+			if (init_credit_v < AverageInitialCredit_v &&
 				user[i][6] == 1)
 				num = num + 1;
-			if (init_credit(i) > AverageInitialCredit_v &&
+			if (init_credit_v > AverageInitialCredit_v &&
 				user[i][6] == 2)
 				num = num + 1;
 		}
@@ -179,7 +183,6 @@ double AverageInitialCredit() {
 	for (int i = 0; i < ATT_NUM; i++) {
 		sum += r[i];
 	}
-	cout << "AverageInitialCredit() return " << sum / ATT_NUM << endl;
 	return sum / ATT_NUM;
 }
 
@@ -188,20 +191,18 @@ void Initial_ant() {
 	for (int i = 0; i < ANT_NUM; i++) {
 		srand(seed);
 		int random_v = rand();
-		seed = random_v * i;
+		seed = random_v + i;
 		int Node_start = random_v % NODE_NUM;
 		int start = Att[Node_start][0];
 		for (int j = 0; j < ATT_NUM; j++)
 		{
-			if (start != j)
-				ant[i].allowed[j] = 1;
-			else
-				ant[i].allowed[j] = 0;
+			ant[i].allowed[j] = user_level[j];
 		}
 		ant[i].Node_Tour[0] = Node_start;
 		ant[i].Tour[0][0] = Att[Node_start][0];
 		ant[i].Tour[0][1] = Att[Node_start][1];
-		for (int j = 1; j < ATT_NUM; j++) {
+		ant[i].allowed[ant[i].Tour[0][0]]--;
+		for (int j = 1; j < LEVEL_NUM; j++) {
 			ant[i].Node_Tour[j] = -1;
 			ant[i].Tour[j][0] = ant[i].Tour[j][1] = -1;
 		}
@@ -213,10 +214,22 @@ int FeelPheromone(int ant_num) {
 	int next_node = -1;
 	//Pheromone分母
 	double sum= 0.0;
+	bool flag;
 	int current = ant[ant_num].current;
 	int current_node = ant[ant_num].Node_Tour[current];
 	for (int next = 0; next < NODE_NUM; next++)
-		if (ant[ant_num].allowed[next]==1) {
+		if (ant[ant_num].allowed[Att[next][0]] > 0) {
+			flag = FALSE;
+			for (int i = 0; ant[ant_num].Node_Tour[i] != -1&&i<7; i++)
+			{
+				if (next == ant[ant_num].Node_Tour[i]) {
+					flag = TRUE;
+					break;
+				}
+			}
+			if (flag) {
+				continue;
+			}
 			sum += pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
 		}
 
@@ -225,7 +238,17 @@ int FeelPheromone(int ant_num) {
 	double probability = 0.0;
 
 	for (int next = 0; next < NODE_NUM; next++) {
-		if (ant[ant_num].allowed[next]==1) {
+		if (ant[ant_num].allowed[Att[next][0]] > 0) {
+			flag = FALSE;
+			for (int i = 0; ant[ant_num].Node_Tour[i] != -1 && i<7; i++)
+			{
+				if (next == ant[ant_num].Node_Tour[i])
+					flag = TRUE;
+				break;
+			}
+			if (flag) {
+				continue;
+			}
 			double a = pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
 			probability +=  a / sum;
 			if(probability >= p || (p > 0.9999 && probability > 0.9999))
@@ -263,25 +286,6 @@ double MaxSolution(double fit[]){
 	return fit[0];
 }
 
-int test(){
-	double fit[TOTAL];
-    for(int i=0;i<TOTAL;i++){
-		Initial_ant();
-		for (int j = 0; j < NODE_NUM; j++) {
-			for (int k = 0; k < ANT_NUM; k++) {
-				int pass = FeelPheromone(k);
-				ant[k].allowed[pass] = 0;
-			}
-		}
-
-		UpdatePheromone();
-		fit[i] = fitness();
-	}        
-	double result = MaxSolution(fit);
-	printf("%lf",result);
-    return 0;
-}
-
 int main() {
 	InitialParameters();
 	ImportSamples();
@@ -294,13 +298,27 @@ int main() {
 				int pass = FeelPheromone(k);
 				if (pass == -1) {
 					cout << "error" << endl;
+					system("PAUSE");
 					return 0;
 				}
-				ant[k].allowed[pass] = 0;
+				else {
+					if (k == 1&& i==0)
+					{
+						cout << "i times:" << i << ";  j forward:" << j << ";  k ant:" << k << ";  passed:" << pass << endl;
+					}
+				}
+				ant[k].Node_Tour[j+1] = pass;
+				ant[k].allowed[Att[pass][0]]--;
+				ant[k].Tour[j+1][0] = Att[pass][0];
+				ant[k].Tour[j+1][1] = Att[pass][1];
 				ant[k].current++;
 			}
 		}
+		UpdatePheromone();
+		fit[i] = fitness();
 	}
+	double result = MaxSolution(fit);
+	printf("%lf", result);
 	system("PAUSE");
 	return 0;
 }
