@@ -4,6 +4,7 @@
 #include <stdio.h>  
 #include <windows.h>  
 #include <algorithm>
+#include<math.h> 
 using namespace std;
 //输出测试保存数据
 #define OUT_DATA
@@ -54,6 +55,10 @@ int user_p[ATT_NUM][5] = {
 //属性分级
 int user_level[ATT_NUM] = { 4,2,2,3,3,4,2 };
 
+//随机数序列
+int rand_int[TOTAL*LEVEL_NUM*ANT_NUM]; 
+
+void Initial_ant();
 double AverageInitialCredit();
 double init_credit(int i, int m);
 double fitness();
@@ -101,7 +106,8 @@ struct Ant {
 double init_credit(int i,int m) {
 	int sum = 0;
 	for (int j = 0; j < ATT_NUM; j++) {
-//		sum += ant[m].Tour[user[i][j]][1];
+		int n = user[i][j];
+//		sum += ant[m].Tour[][1];
 	}
 	return (double)sum;
 }
@@ -138,6 +144,18 @@ void InitialParameters() {
 		for (int j = 0; j < NODE_NUM; j++) {
 			tau[i][j] = TAU;
 			eta[i][j] = ETA;
+		}
+	}
+	
+	int seed = GetTickCount();
+	for (int i = 0; i<TOTAL; i++) {
+		for (int j = 0; j < ATT_NUM; j++) {
+			for (int k = 0; k < ANT_NUM; k++) {
+    			srand(seed);
+    			seed=rand();
+    			rand_int[i*j*ANT_NUM+j*ANT_NUM+k]=seed;
+//    			printf("%d %d\n",i*j*ANT_NUM+k,seed);
+			}
 		}
 	}
 }
@@ -210,7 +228,7 @@ void Initial_ant() {
 	}
 }
 
-int FeelPheromone(int ant_num) {
+int FeelPheromone(int ant_num,int rand_v) {
 	int next_node = -1;
 	//Pheromone分母
 	double sum= 0.0;
@@ -220,7 +238,7 @@ int FeelPheromone(int ant_num) {
 	for (int next = 0; next < NODE_NUM; next++)
 		if (ant[ant_num].allowed[Att[next][0]] > 0) {
 			flag = FALSE;
-			for (int i = 0; ant[ant_num].Node_Tour[i] != -1&&i<7; i++)
+			for (int i = 0; ant[ant_num].Node_Tour[i] != -1&&i<LEVEL_NUM; i++)
 			{
 				if (next == ant[ant_num].Node_Tour[i]) {
 					flag = TRUE;
@@ -233,18 +251,21 @@ int FeelPheromone(int ant_num) {
 			sum += pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
 		}
 
-	srand((unsigned)GetTickCount());
-	double p=(double)(rand()%100)/100;
+  
+	double p=(double)(rand_v%1000)/1000;
+//	if(ant_num==1)
+//		printf("%d %lf\n",rand_v,p);
 	double probability = 0.0;
 
 	for (int next = 0; next < NODE_NUM; next++) {
 		if (ant[ant_num].allowed[Att[next][0]] > 0) {
 			flag = FALSE;
-			for (int i = 0; ant[ant_num].Node_Tour[i] != -1 && i<7; i++)
+			for (int i = 0; ant[ant_num].Node_Tour[i] != -1 && i<LEVEL_NUM; i++)
 			{
-				if (next == ant[ant_num].Node_Tour[i])
+				if (next == ant[ant_num].Node_Tour[i]){
 					flag = TRUE;
-				break;
+					break;
+				}
 			}
 			if (flag) {
 				continue;
@@ -293,9 +314,9 @@ int main() {
 	double fit[TOTAL];
 	for (int i = 0; i<TOTAL; i++) {
 		Initial_ant();
-		for (int j = 0; j < ATT_NUM; j++) {
+		for (int j = 0; j < LEVEL_NUM; j++) {
 			for (int k = 0; k < ANT_NUM; k++) {
-				int pass = FeelPheromone(k);
+				int pass = FeelPheromone(k,rand_int[i*j*ANT_NUM+j*ANT_NUM+k]);
 				if (pass == -1) {
 					cout << "error" << endl;
 					system("PAUSE");
