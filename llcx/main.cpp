@@ -103,11 +103,33 @@ struct Ant {
 	int Node_Tour[LEVEL_NUM];
 }ant[ANT_NUM];
 
+
+
+int cmp(const void *a, const void *b)
+{
+	return *(int *)a - *(int *)b;  //升序排序
+}
+
 double init_credit(int i,int m) {
 	int sum = 0;
+	int nodes[LEVEL_NUM];
+	int c = 0;
 	for (int j = 0; j < ATT_NUM; j++) {
-		int n = user[i][j];
-//		sum += ant[m].Tour[][1];
+		for (int k = 0; k < LEVEL_NUM; k++) {
+			if (ant[m].Tour[k][0] == j) {
+				nodes[c++] = ant[m].Tour[k][1];
+			}
+		}
+		qsort(nodes+c-user_level[j], user_level[j], sizeof(int), cmp);
+	}
+
+	for (int j = 0; j < ATT_NUM; j++) {
+		int v = user[i][j];
+		int f = 0;
+		for (int k = 0; k < j; k++) {
+			f += user_level[k];
+		}
+		sum+=nodes[f + v-1];
 	}
 	return (double)sum;
 }
