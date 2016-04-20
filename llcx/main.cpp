@@ -334,6 +334,7 @@ double MaxSolution(double fit[]){
 }
 
 int main() {
+	ofstream roads("roads.txt");
 	InitialParameters();
 	ImportSamples();
 	AverageInitialCredit_v = AverageInitialCredit();
@@ -361,16 +362,18 @@ int main() {
 				ant[k].current++;
 			}
 		}
-		/*out every ant node
-		for (int j = 0; j < LEVEL_NUM; j++) 
+		/*out every ant node*/
+		for (int j = 0; j < ANT_NUM; j++) 
 		{
-
-		
+			for (int k = 0; k < LEVEL_NUM;k++)
+				roads << ant[j].Node_Tour[k] << " ";
+			roads << endl;
 		}
-		*/
+
 		UpdatePheromone();
 		fit[i] = fitness();
 	}
+	roads.close();
 	double result = MaxSolution(fit);
 	printf("%lf", result);
 	system("PAUSE");
