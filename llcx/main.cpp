@@ -135,9 +135,12 @@ double init_credit(int i,int m) {
 }
 
 double fitness() {
-	int num = 0;
+	int num;
 	double fit[ANT_NUM];
-	for (int m = 1; m < ANT_NUM; m++) {
+	for (int i = 0; i < ANT_NUM; i++)
+		fit[i] = -1;
+	for (int m = 0; m < ANT_NUM; m++) {
+		num = 0;
 		for (int i = 1; i < USER_NUM; i++) {
 			double init_credit_v = init_credit(i, m);
 			if (init_credit_v < AverageInitialCredit_v &&
@@ -147,7 +150,7 @@ double fitness() {
 				user[i][6] == 2)
 				num = num + 1;
 		}
-		fit[m] = num / USER_NUM;
+		fit[m] = (double)num / USER_NUM;
 	}
 	for (int i = 0; i < ANT_NUM; i++) {
 		if (fit[i] > fit[0])
@@ -224,6 +227,7 @@ double AverageInitialCredit() {
 		sum += r[i];
 	}
 	return sum / ATT_NUM;
+	//return sum / ATT_NUM;
 }
 
 void Initial_ant() {
@@ -313,10 +317,10 @@ void UpdatePheromone(){
 		}
 	}
 	for (int i = 0; i < ANT_NUM; i++) {
-		for (int j = 0; j < ATT_NUM; j++)
+		for (int j = 0; j < LEVEL_NUM-1; j++)
 		{
-			int a = ant[i].Tour[j][0];
-			int b = ant[i].Tour[j][1];
+			int a = ant[i].Node_Tour[j];
+			int b = ant[i].Node_Tour[j+1];
 			tau[a][b] += 1;
 		}
 	}
@@ -344,12 +348,12 @@ int main() {
 					system("PAUSE");
 					return 0;
 				}
-				else {
-					if (k == 1&& i==0)
-					{
-						cout << "i times:" << i << ";  j forward:" << j << ";  k ant:" << k << ";  passed:" << pass << endl;
-					}
-				}
+				//else {
+				//	if (k == 1&& i==0)
+				//	{
+				//		cout << "i times:" << i << ";  j forward:" << j << ";  k ant:" << k << ";  passed:" << pass << endl;
+				//	}
+				//}
 				ant[k].Node_Tour[j+1] = pass;
 				ant[k].allowed[Att[pass][0]]--;
 				ant[k].Tour[j+1][0] = Att[pass][0];
@@ -357,6 +361,13 @@ int main() {
 				ant[k].current++;
 			}
 		}
+		/*out every ant node
+		for (int j = 0; j < LEVEL_NUM; j++) 
+		{
+
+		
+		}
+		*/
 		UpdatePheromone();
 		fit[i] = fitness();
 	}
