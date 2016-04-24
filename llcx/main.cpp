@@ -52,6 +52,24 @@ int user_p[ATT_NUM][5] = {
 						{24,49,79,100,-1},
 						{21,100,-1} };
 
+/*
+年龄：<23:43%
+24-50:20%
+>50:36%
+性别：男：35%
+女：15%
+婚姻：未婚：26%
+已婚：18%
+文化程度：本科以上：16%
+本科以下：19%
+住房：租房：20%
+有房：15%
+其他：19%
+收入：>10000：8%
+10000-4000:12%
+<4000:19%
+*/
+
 //属性分级
 int user_level[ATT_NUM] = { 4,2,2,3,3,4,2 };
 
@@ -81,7 +99,7 @@ int Att[NODE_NUM][2]={
 			  {6,1},{6,2}
                   };
 //节点间信息素强度 和 下一节点期望 
-double tau[NODE_NUM][NODE_NUM],eta[NODE_NUM][NODE_NUM];
+double tau[NODE_NUM],eta[NODE_NUM][NODE_NUM];
 
 
 int user[USER_NUM][ATT_NUM];	// 一千个客户
@@ -166,8 +184,8 @@ void InitialParameters() {
 	beta = BETA;
 	rou = ROU;
 	for (int i = 0; i < NODE_NUM; i++) {
+		tau[i] = TAU;
 		for (int j = 0; j < NODE_NUM; j++) {
-			tau[i][j] = TAU;
 			eta[i][j] = ETA;
 		}
 	}
@@ -274,7 +292,7 @@ int FeelPheromone(int ant_num,int rand_v) {
 			if (flag) {
 				continue;
 			}
-			sum += pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
+			sum += pow(tau[next], alpha) * pow(eta[current_node][next], beta);
 		}
 
   
@@ -296,7 +314,7 @@ int FeelPheromone(int ant_num,int rand_v) {
 			if (flag) {
 				continue;
 			}
-			double a = pow(tau[current_node][next], alpha) * pow(eta[current_node][next], beta);
+			double a = pow(tau[next], alpha) * pow(eta[current_node][next], beta);
 			probability +=  a / sum;
 			if(probability >= p || (p > 0.9999 && probability > 0.9999))
 			{
@@ -311,17 +329,14 @@ int FeelPheromone(int ant_num,int rand_v) {
 void UpdatePheromone(){
 	for (int i = 0; i < NODE_NUM; i++)
 	{
-		for (int j = 0; j < NODE_NUM; j++)
-		{
-			tau[i][j] *=  rou;
-		}
+			tau[i] *=  rou;
 	}
 	for (int i = 0; i < ANT_NUM; i++) {
 		for (int j = 0; j < LEVEL_NUM-1; j++)
 		{
 			int a = ant[i].Node_Tour[j];
 			int b = ant[i].Node_Tour[j+1];
-			tau[a][b] += 1;
+			tau[b] += 1;
 		}
 	}
 }
