@@ -38,7 +38,7 @@ eta			1.0
 llcx-plot.m为绘图程序
 
 
-可以生成1000个棵树属性
+可以生成1000个用户属性
 	ImportSamples();
 也可以导入生成的数据
 	CreateSamples();
@@ -46,4 +46,14 @@ llcx-plot.m为绘图程序
 每次蚂蚁初始位置随机，故结果每次有偏差，但是趋向于收敛
 
 运行结果：
-![alt tag](https://github.com/yanshuicc/no-body-konws-this-project/blob/master/spider/image/result.png?raw=true)
+结果1:
+![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res1.png?raw=true)
+
+结果2:
+![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res2.png?raw=true)
+
+结果3:
+![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res3.png?raw=true)
+
+结果4:
+![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res4.png?raw=true)
