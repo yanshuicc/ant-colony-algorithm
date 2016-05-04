@@ -46,14 +46,36 @@ llcx-plot.m为绘图程序
 每次蚂蚁初始位置随机，故结果每次有偏差，但是趋向于收敛
 
 运行结果：
+
+
 结果1:
+
+
 ![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res1.png?raw=true)
 
+
+
+
+
 结果2:
+
+
 ![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res2.png?raw=true)
 
+
+
+
+
 结果3:
+
+
 ![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res3.png?raw=true)
 
+
+
+
+
 结果4:
+
+
 ![alt tag](https://github.com/yanshuicc/ant-colony-algorithm/blob/master/res/res4.png?raw=true)
