@@ -27,3 +27,14 @@ llcx/test.cpp
 *.obj
 *.enc
 llcx/roads.txt
+llcx/fit.txt
+llcx/llcx.mexw64
+llcx/libllcx.a
+llcx/libllcx.def
+llcx/llcx-plot.asv
+llcx/llcx.dll
+llcx/x64/Debug/llcx.vcxprojResolveAssemblyReference.cache
+llcx/参考.cpp
+x64/Debug/llcx.h
+llcx/tau.txt
+llcx/llcx.vcxproj.user
