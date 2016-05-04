@@ -1,5 +1,3 @@
 res=llcx();
-x=0:29;
-ma=zeros(max(res),min(res))+mean(res);
- 
+x=0:29; 
 plot(x,res,'k-o','linewidth',2,'markersize',4);
